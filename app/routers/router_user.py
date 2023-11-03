@@ -1,9 +1,14 @@
+# router_user.py
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database.sqlite import get_db
-from app.database.crud_user import User
+from app.database.model_user import User
 from app.schemas.schema_user import UserCreate, User as UserPydantic
+from app.routers import router_vegetable
 from datetime import datetime
+from fastapi import Query
+from fastapi.responses import RedirectResponse
 
 router = APIRouter()
 
@@ -42,6 +47,24 @@ def login_user(username: str, password: str, db: Session = Depends(get_db)):
 
 # 가장 최근에 로그인한 사용자 정보를 가져오도록 수정
 @router.get("/me", response_model=UserPydantic)
-def get_current_authenticated_user(db: Session = Depends(get_db)):
+def get_current_authenticated_user(
+    db: Session = Depends(get_db),
+    redirect: bool = Query(False, description="Automatically redirect based on owned vegetable IDs")
+):
     user = db.query(User).order_by(User.login_time.desc()).first()
+
+    if redirect:
+        # 사용자가 가진 vegetableIDs 목록 가져오기
+        owned_vegetable_ids = user.get_owned_vegetable_ids()
+
+        if not owned_vegetable_ids:
+            # 사용자가 가진 vegetableID가 없을 때, /me/plant로 리다이렉트
+            return RedirectResponse(url='/me/plant')
+        elif len(owned_vegetable_ids) == 1:
+            # 사용자가 가진 vegetableID가 하나일 때, 해당 vegetableID로 리다이렉트
+            return RedirectResponse(url=f'/me/{owned_vegetable_ids[0]}')
+        else:
+            # 사용자가 가진 vegetableID가 여러 개일 때, /me/ownedIDs로 리다이렉트
+            return RedirectResponse(url='/me/ownedIDs')
+
     return sqlalchemy_to_pydantic(user)

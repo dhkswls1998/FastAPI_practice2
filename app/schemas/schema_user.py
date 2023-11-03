@@ -1,4 +1,7 @@
+# schema_user.py
+
 from pydantic import BaseModel
+from datetime import datetime
 from typing import List
 
 # 사용자 등록 요청
@@ -16,4 +19,4 @@ class User(BaseModel):
     ownedVegetableIDs: List[int] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
