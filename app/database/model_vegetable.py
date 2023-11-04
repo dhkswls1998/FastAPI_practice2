@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database.sqlite import Base
 from datetime import datetime
+from app.database.model_user import User
 
 class Vegetable(Base):
     __tablename__ = "VegetableID"
@@ -15,4 +16,3 @@ class Vegetable(Base):
     vegetableDate = Column(DateTime, default=datetime.utcnow)
     vegetableAge = Column(Integer, default=1)
     owner_id = Column(Integer, ForeignKey("UserID.id"))
-    owner = relationship("User", back_populates="ownedVegetables")

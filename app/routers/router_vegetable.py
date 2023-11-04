@@ -3,9 +3,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database.sqlite import get_db
+from app.database.model_user import User
+from app.schemas.schema_user import UserCreate, User as UserPydantic
 from app.database.model_vegetable import Vegetable
 from app.schemas.schema_vegetable import VegetableCreate, Vegetable as VegetablePydantic
-from app.database.model_user import User
 from fastapi import Query
 from typing import List
 import json
@@ -73,7 +74,7 @@ def get_owned_vegetable_by_id(vegetableID: int, db: Session = Depends(get_db)):
             vegetable = db.query(Vegetable).filter(Vegetable.id == vegetableID).first()
             if vegetable:
                 vegetable_data.append(sqlalchemy_to_pydantic_vegetable(vegetable))
-    
+
     return vegetable_data
 
 # 사용자의 모든 vegetableID 조회
