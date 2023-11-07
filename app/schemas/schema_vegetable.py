@@ -1,7 +1,6 @@
 # schema_vegetable.py
 
 from pydantic import BaseModel, Field
-from datetime import datetime
 from enum import Enum
 
 # 사용 가능한 Type과 Char 선택지 정의
@@ -22,6 +21,7 @@ class VegetableCreate(BaseModel):
     vegetableName: str
     vegetableType: VegetableType = Field(..., description="Type 선택: TypeA, TypeB, TypeC, TypeD")
     vegetableChar: VegetableChar = Field(..., description="Char 선택: CharA, CharB, CharC, CharD")
+    vegetableDate: str
 
 # 식물 정보 응답 처리
 class Vegetable(BaseModel):
@@ -30,7 +30,7 @@ class Vegetable(BaseModel):
     vegetableType: VegetableType
     vegetableChar: VegetableChar
     vegetableLevel: int
-    vegetableDate: datetime
+    vegetableDate: str
     vegetableAge: int
 
     class Config:
